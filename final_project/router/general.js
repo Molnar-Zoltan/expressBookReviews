@@ -34,17 +34,23 @@ public_users.get('/author/:author', function (req, res) {
             .startsWith(req.params.author.toLowerCase()))
     );
     
-    booksByAuthor
+    Object.keys(booksByAuthor).length > 0
         ? res.status(200).json(booksByAuthor) 
         : res.status(404).json({ message: "Book not found" });
-
-    return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Get all books based on title
 public_users.get('/title/:title', function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  
+    let booksByTitle = Object.fromEntries(
+        Object.entries(books).filter(([key, book]) => 
+            book.title.toLowerCase()
+            .startsWith(req.params.title.toLowerCase()))
+    );
+
+    Object.keys(booksByTitle).length > 0
+        ? res.status(200).json(booksByTitle)
+        : res.status(404).json({ message: "Book not found" });
 });
 
 //  Get book review
