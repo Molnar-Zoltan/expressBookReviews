@@ -96,7 +96,7 @@ public_users.get('/author/:author', (req, res) => {
 
     const getBooksByAuthor = (author) => {
         return new Promise((resolve, reject) => {
-            let booksByAuthor = Object.fromEntries(
+            const booksByAuthor = Object.fromEntries(
                 Object.entries(books).filter(([key, book]) => 
                     book.author.toLowerCase()
                     .startsWith(author.toLowerCase()))
@@ -114,21 +114,48 @@ public_users.get('/author/:author', (req, res) => {
 });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
+// Task 4
+// public_users.get('/title/:title', function (req, res) {
   
-    let booksByTitle = Object.fromEntries(
-        Object.entries(books).filter(([key, book]) => 
-            book.title.toLowerCase()
-            .startsWith(req.params.title.toLowerCase()))
-    );
+//     let booksByTitle = Object.fromEntries(
+//         Object.entries(books).filter(([key, book]) => 
+//             book.title.toLowerCase()
+//             .startsWith(req.params.title.toLowerCase()))
+//     );
 
-    Object.keys(booksByTitle).length > 0
-        ? res.status(200).json(booksByTitle)
-        : res.status(404).json({ message: "Book not found" });
+//     Object.keys(booksByTitle).length > 0
+//         ? res.status(200).json(booksByTitle)
+//         : res.status(404).json({ message: "Book not found" });
+// });
+
+// Task 13 - Promise version
+public_users.get('/title/:title', (req, res) => {
+
+    const title = req.params.title;
+
+    const getBooksByTitle = (title) => {
+        return new Promise((resolve, reject) => {
+            const booksByTitle = Object.fromEntries(
+                Object.entries(books).filter(([key, book]) => 
+                    book.title.toLowerCase()
+                    .startsWith(title.toLowerCase()))
+            );
+        
+            Object.keys(booksByTitle).length > 0
+                ? resolve(booksByTitle)
+                : reject("Book not found");
+
+        });
+    }
+
+    getBooksByTitle(title)
+        .then(books => res.status(200).json(books))
+        .catch(error => res.status(404).json({ message: error }));
 });
 
+
 //  Get book review
-public_users.get('/review/:isbn', function (req, res) {
+public_users.get('/review/:isbn', (req, res) => {
     let isbn = req.params.isbn;
     let book = books[isbn];
     let bookReviews = book.reviews;
