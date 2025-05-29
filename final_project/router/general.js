@@ -55,7 +55,8 @@ public_users.get('/', function (req, res) {
 
 //  });
 
-public_users.get('/isbn/:isbn', function (req, res) {
+// Task 11 - Promise version
+public_users.get('/isbn/:isbn', (req, res) => {
     const isbn = req.params.isbn;
 
     const getBookByISBN = (isbn) => {
@@ -73,17 +74,43 @@ public_users.get('/isbn/:isbn', function (req, res) {
 
   
 // Get book details based on author
-public_users.get('/author/:author', function (req, res) {
+// Task 3
+// public_users.get('/author/:author', function (req, res) {
     
-    let booksByAuthor = Object.fromEntries(
-        Object.entries(books).filter(([key, book]) => 
-            book.author.toLowerCase()
-            .startsWith(req.params.author.toLowerCase()))
-    );
+//     let booksByAuthor = Object.fromEntries(
+//         Object.entries(books).filter(([key, book]) => 
+//             book.author.toLowerCase()
+//             .startsWith(req.params.author.toLowerCase()))
+//     );
     
-    Object.keys(booksByAuthor).length > 0
-        ? res.status(200).json(booksByAuthor) 
-        : res.status(404).json({ message: "Book not found" });
+//     Object.keys(booksByAuthor).length > 0
+//         ? res.status(200).json(booksByAuthor) 
+//         : res.status(404).json({ message: "Book not found" });
+// });
+
+  
+// Task 12 - Promise version
+public_users.get('/author/:author', (req, res) => {
+    
+    const author = req.params.author;
+
+    const getBooksByAuthor = (author) => {
+        return new Promise((resolve, reject) => {
+            let booksByAuthor = Object.fromEntries(
+                Object.entries(books).filter(([key, book]) => 
+                    book.author.toLowerCase()
+                    .startsWith(author.toLowerCase()))
+            );
+            
+            Object.keys(booksByAuthor).length > 0
+                ? resolve(booksByAuthor) 
+                : reject("Book not found");
+        });
+    }
+
+    getBooksByAuthor(author)
+    .then(books => res.status(200).json(books))
+    .catch(error => res.status(404).json({ message: error }));
 });
 
 // Get all books based on title
